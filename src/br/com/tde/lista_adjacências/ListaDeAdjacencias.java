@@ -3,70 +3,73 @@ package br.com.tde.lista_adjacências;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.tde.node.Node;
+
 public class ListaDeAdjacencias {
     private boolean direcionado;
     private boolean ponderado;
     private List<Node> nodes;
 
-    public ListaDeAdjacencias(boolean direcionado, boolean ponderado, boolean possuiPeso) {
+    public ListaDeAdjacencias(boolean ponderado, boolean direcionado) {
         this.direcionado = direcionado;
         this.ponderado = ponderado;
         this.nodes = new ArrayList<>();
-    }
-
-    public boolean getDirecionado() {
-        return direcionado;
-    }
-
-    public boolean getPonderado() {
-        return ponderado;
     }
 
     public boolean adicionarNode(String valorNode) {
         Node nodeParaAdicionar = getNodeByValue(valorNode);
 
         if (nodeParaAdicionar == null) {
-            nodes.add(nodeParaAdicionar);
+            Node novoNode = new NodeListaDeAdjacencias(valorNode, ponderado, direcionado);
+            
+            nodes.add(novoNode);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public boolean deletarNode(String valorNode) {
-        Node nodeParaDeletar = getNodeByValue(valorNode);
+        Node nodeParaRemover = getNodeByValue(valorNode);
         
-        if (nodeParaDeletar != null) {
-            nodes.remove(nodeParaDeletar);
+        if (nodeParaRemover != null) {
+        	// O NodeListaDeAdjacencias vai estar perdido em memoria
+        	
+            nodes.remove(nodeParaRemover);
             return true;
-        } else {
-            return false;
         }
-    }
-
-    public boolean adicionarRelacao(String valorOrigem, String valorDestino, int peso) {
-        Node nodeOrigem = getNodeByValue(valorOrigem);
-        Node nodeDestino = getNodeByValue(valorDestino);
-        
-        if (nodeOrigem == null || nodeDestino == null) {
-            System.out.println("Nó de origem ou destino não encontrado.");
-            return false;
-        }
-        
-        if (direcionado) {
-            nodeOrigem.adicionarRelacao(valorDestino, peso, ponderado);
-        }
-        else {
-            nodeOrigem.adicionarRelacao(valorDestino, peso, ponderado);
-            nodeDestino.adicionarRelacao(valorOrigem, peso, ponderado);
-        }
-        return true;
-    }
-
-    private boolean removerRelacao () {
-    	return true;
+        return false;
     }
     
+    public boolean adicionarRelacao(String valorOrigem, String valorDestino, int peso) {
+        Node origem = getNodeByValue(valorOrigem);
+        Node destino = getNodeByValue(valorDestino);
+        
+        if (origem != null && destino != null) {
+            ((NodeListaDeAdjacencias) origem).adicionarRelacao(valorDestino, peso);
+            
+            if (!direcionado) {
+            	((NodeListaDeAdjacencias) destino).adicionarRelacao(valorOrigem, peso);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removerRelacao(String valorOrigem, String valorDestino) {
+        Node origem = getNodeByValue(valorOrigem);
+        Node destino = getNodeByValue(valorDestino);
+        
+        if (origem != null && destino != null) {
+        	((NodeListaDeAdjacencias) origem).removerRelacao(valorDestino);
+            
+            if (!direcionado) {
+                    ((NodeListaDeAdjacencias) destino).removerRelacao(valorOrigem);
+            }
+            return true;
+        }
+        return false;
+    }
+
     private Node getNodeByValue(String valorNode) {
     	for (Node node: nodes) {
     		if (node.getValorNode() == valorNode) {
