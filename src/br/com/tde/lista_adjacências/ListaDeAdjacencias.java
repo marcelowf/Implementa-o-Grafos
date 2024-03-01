@@ -27,18 +27,22 @@ public class ListaDeAdjacencias {
         }
         return false;
     }
-
+    
     public boolean deletarNode(String valorNode) {
         Node nodeParaRemover = getNodeByValue(valorNode);
-        
+
         if (nodeParaRemover != null) {
-        	// O NodeListaDeAdjacencias vai estar perdido em memoria
-        	
+            for (Node node : nodes) {
+                if (node != nodeParaRemover) {
+                    ((NodeListaDeAdjacencias) node).removerRelacao(valorNode);
+                }
+            }
             nodes.remove(nodeParaRemover);
             return true;
         }
         return false;
     }
+
     
     public boolean adicionarRelacao(String valorOrigem, String valorDestino, int peso) {
         Node origem = getNodeByValue(valorOrigem);
@@ -63,7 +67,7 @@ public class ListaDeAdjacencias {
         	((NodeListaDeAdjacencias) origem).removerRelacao(valorDestino);
             
             if (!direcionado) {
-                    ((NodeListaDeAdjacencias) destino).removerRelacao(valorOrigem);
+            	((NodeListaDeAdjacencias) destino).removerRelacao(valorOrigem);
             }
             return true;
         }
@@ -71,11 +75,11 @@ public class ListaDeAdjacencias {
     }
 
     private Node getNodeByValue(String valorNode) {
-    	for (Node node: nodes) {
-    		if (node.getValorNode() == valorNode) {
-    			return node;
-    		}
-    	}
-    	return null;
+        for (Node node : nodes) {
+            if (node.getValorNode().equals(valorNode)) {
+                return node;
+            }
+        }
+        return null;
     }
 }
